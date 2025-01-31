@@ -45,7 +45,7 @@ text(0,0,1.1, 'Ez', 'FontSize', 10, 'Color', 'b');
 
 for i = 1:n
 
-    position_vector = quiver3(0,0,0,r(i,1), r(i,2), r(i,3),'linewidth',2);
+    position_vector = quiver3(0,0,0,r(i,1), r(i,2), r(i,3),'k','linewidth',2);
 
     er_plot = quiver3(r(i,1), r(i,2), r(i,3), er(i,1), er(i,2), er(i,3), 'r', 'linewidth', 2);
     etheta_plot = quiver3(r(i,1), r(i,2), r(i,3), etheta(i,1), etheta(i,2), etheta(i,3), 'g', 'linewidth', 2);
