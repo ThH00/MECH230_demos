@@ -15,12 +15,24 @@ ho = 50; % Initial height of the drop (m)
 X_clothoid = @(s) arrayfun(@(u) integral(@(z) cos((c * z.^2) / 2), 0, u, 'ArrayValued', true), s);
 Y_clothoid = @(s) arrayfun(@(u) integral(@(z) sin((c * z.^2) / 2), 0, u, 'ArrayValued', true), s);
 
+
+
 % Compute clothoid coordinates
 x_values = X_clothoid(t_values);
 y_values = Y_clothoid(t_values);
 
 % Find the highest point (where y reaches max)
 [~, idx_max] = max(y_values);
+
+% The parameter t_values is effectively the arc length s.
+% So the curvature at each t is k(t) = c * t.
+k_values = c * t_values;
+
+% Now trim & mirror k_values the same way you did for x_values, y_values:
+k_values = k_values(1:idx_max);
+k_mirrored = flip(k_values); 
+k_track = [k_values, k_mirrored];
+
 
 % Trim the loop to stop at its highest point
 x_values = x_values(1:idx_max);
@@ -49,7 +61,7 @@ hold on
 plot(x_track,y_track)
 for i=1:10:length(x_track)
     en = cross(Ez,et(i,:));
-    quiver(x_track(i),y_track(i),3*en(1),3*en(2),'r');
+    quiver(x_track(i),y_track(i),3*en(1),3*en(2),'r','MaxHeadSize',0.5);
 
     quiver(x_track(i),y_track(i),10*et(i,1),10*et(i,2),'b');
 end
@@ -57,13 +69,10 @@ end
 % Compute velocity based on conservation of energy
 h_initial = max(y_track);
 v = sqrt(2 * g * (h_initial - y_track));
+%compute normal force
+N = m * (k_track .* (v.^2) + g * dot([0,1,0],en));
 
-% Compute time for each segment
-dt = 0.05; % Time step
-time = [0 cumsum(sqrt(diff(x_track).^2 + diff(y_track).^2) ./ v(1:end-1))];
-time = [time, time(end)];
-
-% Animation setup
+% --- Animation setup ---
 figure;
 hold on;
 plot(x_track, y_track, 'b', 'LineWidth', 2);
@@ -74,9 +83,10 @@ ylabel('Y Position');
 grid on;
 axis equal;
 
-% Animation loop
+% --- Animation loop with display of N ---
 for i = 1:length(x_track)
     set(roller_coaster, 'XData', x_track(i), 'YData', y_track(i));
+    
     pause(0.02);
 end
 
