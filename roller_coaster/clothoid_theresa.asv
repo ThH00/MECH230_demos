@@ -64,8 +64,8 @@ for i = n:2*n
 end
 % plotting the scaled unit vectors
 for i = 1:20:2*n
-    quiver(x(i),y(i),0.1*et(1,i),0.1*et(2,i),'b','LineWidth',2);
-    quiver(x(i),y(i),0.1*en(1,i),0.1*en(2,i),'r','LineWidth',2);
+    quiver(x(i),y(i),0.1*et(1,i),0.1*et(2,i),'b');
+    quiver(x(i),y(i),0.1*en(1,i),0.1*en(2,i),'r');
 end
 
 % Calculating the normal force
