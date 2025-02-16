@@ -9,7 +9,7 @@ er = [cos(theta), sin(theta), zeros(n,1)];
 etheta = [-sin(theta), cos(theta), zeros(n,1)];
 
 animation = VideoWriter('cone_bais.avi');
-animation.FrameRate = 100;
+animation.FrameRate = 20;
 open(animation);
 
 ang_arr = linspace(0,5*pi,100);
@@ -61,7 +61,7 @@ for i = 1:n
     drawnow
     writeVideo(animation, getframe(gcf))
 
-    pause(1)
+    pause(0.02)
 
     delete(er_plot)
     delete(etheta_plot)
