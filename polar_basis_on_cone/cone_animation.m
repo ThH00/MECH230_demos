@@ -61,7 +61,7 @@ for i = 1:n
     drawnow
     writeVideo(animation, getframe(gcf))
 
-    pause(0.01)
+    pause(1)
 
     delete(er_plot)
     delete(etheta_plot)

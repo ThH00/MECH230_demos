@@ -52,15 +52,19 @@ figure;
 hold on;
 plot(x_track, h_track, 'k', 'LineWidth', 2); % Draw track
 roller_coaster = plot(x_track(1), h_track(1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r'); % Roller coaster point
-quiver_arrow = quiver(x_track(1), h_track(1), 0, Fn(1)/100, 'b', 'LineWidth', 2, 'MaxHeadSize', 0.5); % Normal force vector
-title('Realistic Roller Coaster Simulation with Normal Force');
+
+% Initialize polar basis vectors (e_r and e_theta)
+e_r = quiver(x_track(1), h_track(1), 0, 0, 'b', 'LineWidth', 2, 'MaxHeadSize', 0.5); % Radial unit vector
+e_theta = quiver(x_track(1), h_track(1), 0, 0, 'g', 'LineWidth', 2, 'MaxHeadSize', 0.5); % Tangential unit vector
+
+title('Realistic Roller Coaster Simulation with Polar Basis');
 xlabel('Horizontal Position (m)');
 ylabel('Height (m)');
 axis equal;
 grid on;
 
 % Video setup
-videoFile = 'roller_coaster_animation.mp4';
+videoFile = 'roller_coaster_animation_PB.mp4';
 videoWriter = VideoWriter(videoFile, 'MPEG-4');
 videoWriter.FrameRate = 20; % Set frame rate
 open(videoWriter);
@@ -70,19 +74,31 @@ for i = 1:length(x_track)
     % Update roller coaster position
     set(roller_coaster, 'XData', x_track(i), 'YData', h_track(i));
     
-    % Determine normal force direction
+    % Calculate polar basis vectors
     if i <= length(x_flat_before) || i > length(x_flat_before) + length(x_loop)
-        % Flat sections: Normal force points straight up
-        UData = 0;
-        VData = Fn(i)/100;
+        % Flat sections: e_r points straight up, e_theta points horizontally
+        e_r_x = 0;
+        e_r_y = -1;
+        e_theta_x = 1;
+        e_theta_y = 0;
     else
-        % Loop section: Normal force is perpendicular to the track
-        UData = -sin(theta(i)) * Fn(i)/100;
-        VData = cos(theta(i)) * Fn(i)/100;
+        % Loop section: e_r points radially outward, e_theta points tangentially
+        % Center of the loop is at (flat_length, r)
+        center_x = flat_length;
+        center_y = r;
+        dx = x_track(i) - center_x;
+        dy = h_track(i) - center_y;
+        magnitude = sqrt(dx^2 + dy^2);
+        e_r_x = dx / magnitude; % Radial unit vector (outward)
+        e_r_y = dy / magnitude;
+        e_theta_x = -e_r_y; % Tangential unit vector (perpendicular to e_r)
+        e_theta_y = e_r_x;
     end
     
-    % Update quiver arrow
-    set(quiver_arrow, 'XData', x_track(i), 'YData', h_track(i), 'UData', UData/5, 'VData', VData/5);
+    % Scale vectors for visualization
+    scale = 5; % Scaling factor for vector length
+    set(e_r, 'XData', x_track(i), 'YData', h_track(i), 'UData', e_r_x * scale, 'VData', e_r_y * scale);
+    set(e_theta, 'XData', x_track(i), 'YData', h_track(i), 'UData', e_theta_x * scale, 'VData', e_theta_y * scale);
     
     % Display velocity, g-force, normal force, and velocity change
     if i > 1
@@ -92,6 +108,7 @@ for i = 1:length(x_track)
         fprintf('Position: %.2f m | Height: %.2f m | Velocity: %.2f m/s | G-Force: %.2f | Normal Force: %.2f N\n', ...
             x_track(i), h_track(i), v(i), G(i), Fn(i));
     end
+    
     % Update title with normal force value
     title(sprintf('Normal Force: %.2f N', Fn(i)));
     

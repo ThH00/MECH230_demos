@@ -81,6 +81,12 @@ en = cross(repmat(Ez, length(x_track), 1), et, 2); % Cross product along rows (f
 % Initialize quiver object
 quiver_handle = quiver(x_track(1), y_track(1), en(1, 1) * N(1)/1000, en(1, 2) * N(1)/1000, 'r', 'LineWidth', 1.5, 'MaxHeadSize', 0.5);
 
+% --- Video setup ---
+videoFile = 'clothoid_roller_coaster.mp4'; % Output video file name
+videoWriter = VideoWriter(videoFile, 'MPEG-4'); % Create VideoWriter object
+videoWriter.FrameRate = 30; % Set frame rate (frames per second)
+open(videoWriter); % Open the video file for writing
+
 % --- Animation loop ---
 for i = 1:length(x_track)
     % Update roller coaster position
@@ -98,5 +104,14 @@ for i = 1:length(x_track)
     % Update title with normal force value
     title(sprintf('Normal Force: %.2f N', N(i)));
     
+    % Capture the current frame
+    frame = getframe(gcf); % Capture the entire figure
+    writeVideo(videoWriter, frame); % Write the frame to the video
+    
+    % Pause for animation effect
     pause(0.02);
 end
+
+% --- Clean up ---
+close(videoWriter); % Close the video file
+fprintf('Animation saved as %s\n', videoFile);
