@@ -53,7 +53,8 @@ figure;
 hold on;
 plot(x_track, y_track, 'b', 'LineWidth', 2); % Plot the track
 roller_coaster = plot(x_track(1), y_track(1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r'); % Roller coaster
-
+line_to_origin = plot([0 0], [0 0], 'k:', 'LineWidth', 2); % Initial empty line
+polar_origin = plot(x_track(1),y_track(1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'k');
 % Initialize polar basis vectors (e_r and e_theta)
 origin_x = x_track(1); % Origin is the start of the track
 origin_y = y_track(1);
@@ -85,6 +86,7 @@ for i = 1:length(x_track)
     
     % Update roller coaster position
     set(roller_coaster, 'XData', current_x, 'YData', current_y);
+    set(line_to_origin, 'XData', [0 current_x], 'YData', [0 current_y] )
     
     % Calculate polar basis vectors relative to the origin (track start)
     dx = current_x - origin_x;
