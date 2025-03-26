@@ -59,9 +59,10 @@ Ez = [0,0,1];
 figure(100)
 hold on
 plot(x_track,y_track)
+en = zeros(length(x_track),3);
 for i=1:10:length(x_track)
-    en = cross(Ez,et(i,:));
-    quiver(x_track(i),y_track(i),3*en(1),3*en(2),'r','MaxHeadSize',0.5);
+    en(i,:) = cross(Ez,et(i,:));
+    quiver(x_track(i),y_track(i),3*en(i,1),3*en(i,2),'r','MaxHeadSize',0.5);
 
     quiver(x_track(i),y_track(i),10*et(i,1),10*et(i,2),'b');
 end
@@ -69,8 +70,15 @@ end
 % Compute velocity based on conservation of energy
 h_initial = max(y_track);
 v = sqrt(2 * g * (h_initial - y_track));
+N = zeros(length(x_track));
 %compute normal force
-N = m * (k_track .* (v.^2) + g * dot([0,1,0],en));
+for i = 1:length(x_track)
+    N(i) = m * (k_track(i) .* (v(i).^2) + g * dot([0,1,0],en(i,:)));
+end
+
+animation = VideoWriter('clothoid_rollercoaster.avi');
+animation.FrameRate = 100;
+open(animation);
 
 % --- Animation setup ---
 figure;
@@ -83,11 +91,18 @@ ylabel('Y Position');
 grid on;
 axis equal;
 
+quiver_arrow = quiver(x_track(1),y_track(1),N(1)*en(i,1),N(1)*en(i,2),'r','MaxHeadSize',0.5);
+
 % --- Animation loop with display of N ---
 for i = 1:length(x_track)
     set(roller_coaster, 'XData', x_track(i), 'YData', y_track(i));
+    set(quiver_arrow, 'XData', x_track(i), 'YData', y_track(i), 'UData', N(i)*en(i,1), 'VData', N(i)*en(i,2));
+
+    drawnow
+    writeVideo(animation, getframe(gcf))
     
     pause(0.02);
 end
 
+close(animation)
 
