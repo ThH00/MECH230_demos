@@ -1,7 +1,8 @@
 figure()
 hold on
 
-axis([-0.1, 1, -0.1, 1])
+axis([-0.1, 1.1, -0.1, 1.1])
+axis off;
 box on
 
 l = 1;  % length of hoop
