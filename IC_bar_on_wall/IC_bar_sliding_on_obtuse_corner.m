@@ -1,8 +1,11 @@
 figure()
-hold on
-
-axis([-0.1, 1.1, -0.6, 1.1])
-% axis off;
+set(gcf, 'Color', 'w');                          % White figure background
+set(gca, 'Color', 'w');                          % White axes background
+set(gcf, 'Position', [100, 100, 1000, 1000]);    % Large figure window
+set(gca, 'Position', [0.1, 0.1, 0.8, 0.8]);
+hold on;
+axis([-0.1, 1.1, -0.1, 1.1])
+axis off;
 box on
 
 l = 1;  % length of hoop
@@ -32,7 +35,7 @@ v = cos(gamma)*Ey+sin(gamma)*Ex;
 for i = 1:n
 
     axis equal
-    axis([-0.1, 1.1, -0.6, 1.1])
+    axis([-0.1, 1.5, -0.8, 1.5])
 
     rA = OA(i)*Ey;
     rB = OB(i)*u;
@@ -51,6 +54,7 @@ for i = 1:n
     delete(bar)
     delete(perp_A)
     delete(perp_B)
+    delete(plot_IC)
 
 end
 
